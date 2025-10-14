@@ -367,7 +367,7 @@
   @if (empty($hideSidebar))
     <div class="sidebar" id="sidebar">
   <div class="sidebar-header">
-    <img src="{{ asset('storage/images/logo.png') }}" alt="Logo Kawai Musik" class="sidebar-logo img-fluid">
+    <img src="{{ asset('storage/Images/logo.png') }}" alt="Logo Kawai Musik" class="sidebar-logo img-fluid">
     <h4>Kawai Musik</h4>
   </div>
 
