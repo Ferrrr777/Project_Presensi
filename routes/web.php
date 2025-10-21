@@ -12,80 +12,82 @@ use App\Http\Controllers\Admin\AlatMusikController;
 use App\Http\Controllers\Admin\PengajarController;
 use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Admin\RescheduleController;
+use App\Http\Controllers\Pengajar\PresensiController;
 
 
 // =======================
 // HALAMAN LOGIN / UTAMA
 // =======================
-Route::get('/', function() {
-    return view('auth.login');
-});
 
-// ✅ Halaman login (GET)
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-// ✅ Proses login (POST)
+// Proses login (POST)
 Route::post('/login', function (Request $request) {
     $credentials = $request->only('email', 'password');
 
-    // Validasi data
+    // Validasi input
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
     ]);
 
-    // Coba login
-    if (Auth::attempt($credentials)) {
+    // 🔹 Logout semua guard dulu
+    Auth::guard('web')->logout();
+    Auth::guard('pengajars')->logout();
+
+    // -----------------------
+    // 1️⃣ Coba login sebagai admin (guard: web)
+    // -----------------------
+    if (Auth::guard('web')->attempt($credentials)) {
         $request->session()->regenerate();
 
-        // Arahkan sesuai role user
-        $role = Auth::user()->role;
+        $user = Auth::guard('web')->user();
 
-        if ($role === 'admin') {
+        // Jika punya kolom role di tabel users
+        if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
 
-        if ($role === 'pengajar') {
-            return redirect()->route('pengajar.dashboard');
-        }
-
-        // Default jika role tidak dikenali
+        // Jika ternyata user biasa tapi bukan admin
         return redirect('/');
     }
 
-    // Jika gagal login
+    // -----------------------
+    // 2️⃣ Coba login sebagai pengajar (guard: pengajars)
+    // -----------------------
+    if (Auth::guard('pengajars')->attempt($credentials)) {
+        $request->session()->regenerate();
+        return redirect()->route('pengajar.dashboard');
+    }
+
+    // -----------------------
+    // 3️⃣ Jika dua-duanya gagal
+    // -----------------------
     return back()->withErrors([
         'email' => 'Email atau password salah.',
     ])->onlyInput('email');
 });
 
-// ✅ Logout
+// =======================
+// ✅ LOGOUT UNTUK DUA GUARD
+// =======================
 Route::post('/logout', function (Request $request) {
-    Auth::logout();
+    // Logout dari dua guard sekaligus
+    Auth::guard('web')->logout();
+    Auth::guard('pengajars')->logout();
+
     $request->session()->invalidate();
     $request->session()->regenerateToken();
-    return redirect('/login');
-})->name('logout');
 
-// =======================
-// ROUTE LOGOUT
-// =======================
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/login'); 
+    return redirect('/login')->with('success', 'Anda telah logout.');
 })->name('logout');
 
 // =======================
 // ROUTE ADMIN
 // =======================
-// =======================
-// ROUTE ADMIN
-// =======================
-Route::prefix('admin')->middleware('auth')->name('admin.')->group(function() {
+Route::prefix('admin')->middleware('auth:web')->name('admin.')->group(function() {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Generate QR
@@ -127,13 +129,16 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function() {
 // =======================
 // ROUTE PENGAJAR
 // =======================
-Route::prefix('pengajar')->middleware('auth')->name('pengajar.')->group(function() {
+Route::prefix('pengajar')->middleware('auth:pengajars')->name('pengajar.')->group(function() {
     Route::get('dashboard', [AbsensiController::class, 'index'])->name('dashboard');
     
     Route::get('materi', function(){ return view('pengajar.materi'); })->name('materi');
     Route::get('scan_qr', [AbsensiController::class, 'scanQrForm'])->name('scan-qr-form');
-    Route::get('presensi', function(){ return view('pengajar.presensi'); })->name('presensi');
-   
+    
+// ✅ Presensi
+    Route::get('presensi', [PresensiController::class, 'index'])->name('presensi.index');
+    Route::post('presensi/store', [PresensiController::class, 'store'])->name('presensi.store');
+
     Route::get('materi', function(){ return view('pengajar.materi'); })->name('materi');
      
     Route::get('laporan', function(){ return view('pengajar.laporan'); })->name('laporan');

@@ -357,6 +357,16 @@
     .content > * {
       animation: fadeIn 0.5s ease-out;
     }
+
+    @media (max-width: 576px) {
+  .topbar {
+    padding: 0 0.5rem; /* Kurangi padding untuk ruang lebih */
+    justify-content: space-between; /* Pastikan elemen tersebar */
+  }
+  .switch {
+    margin-left: 0.5rem; /* Kurangi margin jika perlu */
+  }
+}
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -373,7 +383,7 @@
 
   <ul class="nav-items">
    {{-- Cek apakah user adalah admin --}}
-  @if(Auth::check() && Auth::user()->role === 'admin')
+   @if(Auth::guard('web')->check() && Auth::guard('web')->user()->role === 'admin')
       <a href="/admin/dashboard" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
         <i class="fas fa-tachometer-alt"></i><span> Dashboard</span>
       </a>
@@ -405,10 +415,10 @@
       <a href="/admin/laporan" class="{{ request()->is('admin/laporan') ? 'active' : '' }}">
         <i class="fas fa-file-invoice"></i><span> Laporan Absensi</span>
       </a>
-        @endif
+       
 
         {{-- Cek jika user adalah pengajar --}}
-  @if(Auth::check() && Auth::user()->role === 'pengajar')
+  @elseif(Auth::guard('pengajars')->check())
       <a href="{{ route('pengajar.dashboard') }}">
         <i class="fas fa-tachometer-alt"></i><span> Dashboard</span>
     </a>
@@ -418,12 +428,13 @@
     <a href="{{ route('pengajar.scan-qr-form') }}">
         <i class="fas fa-qrcode"></i><span> Scan QR</span>
     </a>
-    <a href="{{ route('pengajar.presensi') }}">
+    <a href="{{ route('pengajar.presensi.index') }}">
         <i class="fas fa-calendar-check"></i><span> Presensi</span>
     </a>
     <a href="{{ route('pengajar.laporan') }}">
         <i class="fas fa-file-invoice"></i><span> Laporan</span>
         </a>
+       
     @endif
   </ul>
 
@@ -439,18 +450,17 @@
 </div>
   @endif
 
-  
 
-  {{-- Topbar --}}
-  @if (empty($hideSidebar))
+{{-- Topbar --}}
+@if (empty($hideSidebar))
     <nav class="topbar">
       <button class="sidebar-toggle d-lg-none me-2" id="mobileSidebarToggle">
         <i class="fas fa-bars"></i>
       </button>
-      <a class="navbar-brand" href="/admin/dashboard">Kawai Musik</a>
+      <a class="navbar-brand " href="/admin/dashboard">Kawai Musik</a> 
 
       <div class="ms-auto d-flex align-items-center">
-        <div id="dateTimeDisplay" class="me-3"></div>
+        <div id="dateTimeDisplay" class="me-3 d-none d-lg-block"></div> <!-- Sembunyikan datetime di tablet dan mobile -->
 
         <label class="switch">
           <input type="checkbox" id="darkModeSwitch">
@@ -458,7 +468,7 @@
         </label>
       </div>
     </nav>
-  @endif
+@endif
 
   {{-- Content --}}
   <div class="content {{ !empty($hideSidebar) ? 'no-sidebar' : '' }}" id="mainContent">
