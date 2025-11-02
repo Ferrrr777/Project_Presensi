@@ -14,6 +14,22 @@
         </div>
     </div>
 
+    <!-- Notifikasi -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>{{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Tombol Fullscreen -->
     <div class="text-center mt-5">
         <button id="openScannerBtn" class="btn btn-primary btn-lg px-4 py-3 rounded-pill shadow">
             <i class="fas fa-qrcode me-2"></i> Mulai Scan QR
@@ -37,18 +53,36 @@
 .bg-gradient-primary {
     background: linear-gradient(135deg, #4f46e5, #6366f1);
 }
+
+/* Fullscreen overlay */
 .scanner-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.95); z-index: 9999;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+
 .fullscreen-reader {
-    width: 90vw; max-width: 600px; aspect-ratio: 1/1;
-    border: 2px dashed #888; border-radius: 1rem; overflow: hidden; background: #000;
+    width: 90vw;
+    max-width: 600px;
+    aspect-ratio: 1/1;
+    border: 2px dashed #888;
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #000;
 }
+
 .close-btn {
-    position: absolute; top: 20px; right: 20px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
+
 .d-none { display: none !important; }
 </style>
 
@@ -61,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const overlay = document.getElementById('scannerOverlay');
     const closeBtn = document.getElementById('closeScannerBtn');
 
-    // Buka scanner
     openBtn.addEventListener('click', async () => {
         overlay.classList.remove('d-none');
 
@@ -71,77 +104,93 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const devices = await Html5Qrcode.getCameras();
-            if (!devices || !devices.length) {
+            if (devices && devices.length) {
+                const backCamera = devices.find(d =>
+                    d.label.toLowerCase().includes('back') ||
+                    d.label.toLowerCase().includes('environment')
+                );
+                const cameraId = backCamera ? backCamera.id : devices[0].id;
+
+                await html5QrCode.start(
+                    cameraId,
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    onScanSuccess,
+                    onScanFailure
+                );
+                isScanning = true;
+            } else {
                 Swal.fire('Gagal', 'Tidak ada kamera ditemukan.', 'error');
-                return;
             }
-
-            const backCamera = devices.find(d =>
-                d.label.toLowerCase().includes('back') ||
-                d.label.toLowerCase().includes('environment')
-            );
-            const cameraId = backCamera ? backCamera.id : devices[0].id;
-
-            await html5QrCode.start(
-                cameraId,
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                onScanSuccess
-            );
-            isScanning = true;
-
         } catch (err) {
-            console.error(err);
-            Swal.fire('Error', 'Tidak bisa mengakses kamera.', 'error');
+            Swal.fire('Error', 'Tidak bisa mengakses kamera: ' + err.message, 'error');
         }
     });
 
-    // Tutup scanner
     closeBtn.addEventListener('click', stopScanner);
 
     async function onScanSuccess(decodedText) {
-        console.log('QR Ditemukan:', decodedText);
+        console.log('QR:', decodedText);
+
+        if (!decodedText) {
+            Swal.fire('Error', 'QR tidak terbaca.', 'error');
+            return;
+        }
 
         const scanButton = document.getElementById('openScannerBtn');
         if (scanButton) scanButton.disabled = true;
 
         try {
-            const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                credentials: 'same-origin', // ✅ wajib untuk session cookie
-                body: JSON.stringify({ kode_qr: decodedText })
-            });
+            
+ const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    },
+    credentials: 'same-origin', // <=== PENTING
+    body: JSON.stringify({ kode_qr: decodedText })
+});
 
-            // Debug raw response
-            const raw = await response.text();
-            console.log('RAW RESPONSE:', raw);
 
+            // Pastikan JSON
             let result;
             try {
-                result = JSON.parse(raw);
-            } catch(e) {
-                Swal.fire('Error', 'Response server tidak valid. Cek console.', 'error');
+                result = await response.json();
+            } catch (e) {
+                Swal.fire('Error', 'Response server tidak valid: ' + e.message, 'error');
                 stopScanner();
                 return;
             }
 
+            // Debug info untuk developer / pengajar
+            console.log('DEBUG SCAN RESULT:', result);
+
             if (result.status === 'success') {
-                Swal.fire({ title: 'Berhasil!', text: result.message, icon: 'success', timer: 2000, showConfirmButton: false });
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: result.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             } else {
-                Swal.fire('Info', result.message, 'info');
+                Swal.fire('Info', result.message || 'Terjadi kesalahan saat scan.', 'info');
             }
 
         } catch (error) {
-            console.error(error);
-            Swal.fire('Error', 'Gagal menyimpan hasil scan.', 'error');
+            Swal.fire('Error', 'Gagal menyimpan hasil scan: ' + error.message, 'error');
         }
 
         stopScanner();
 
-        setTimeout(() => { if (scanButton) scanButton.disabled = false; }, 3000);
+        setTimeout(() => {
+            if (scanButton) scanButton.disabled = false;
+        }, 3000);
+    }
+
+    function onScanFailure(error) {
+        // Bisa tampilkan jika ingin debug scanning tiap frame
+        // console.warn(`QR Scan failed: ${error}`);
     }
 
     async function stopScanner() {
@@ -154,4 +203,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endsection
-@extends('layouts.app')
