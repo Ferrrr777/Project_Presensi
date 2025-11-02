@@ -1,15 +1,16 @@
-# Gunakan image PHP resmi dengan GD extension
-FROM php:8.2-fpm
+# Gunakan image PHP 8.3 agar kompatibel dengan zipstream-php
+FROM php:8.3-fpm
 
-# Install dependencies untuk Laravel & GD
+# Install dependencies untuk Laravel, GD, dan ZIP
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
+    libzip-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    && docker-php-ext-install gd zip pdo_mysql
 
 # Copy semua file project
 COPY . /var/www/html
