@@ -129,77 +129,53 @@ document.addEventListener('DOMContentLoaded', function () {
     closeBtn.addEventListener('click', stopScanner);
 
     async function onScanSuccess(decodedText) {
-        console.log('QR:', decodedText);
+    console.log('QR:', decodedText);
 
-        if (!decodedText) {
-            Swal.fire('Error', 'QR tidak terbaca.', 'error');
-            return;
+    const scanButton = document.getElementById('openScannerBtn');
+    if (scanButton) scanButton.disabled = true;
+
+    try {
+        const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            credentials: 'include', // penting agar session terbawa
+            body: JSON.stringify({ kode_qr: decodedText })
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            Swal.fire({
+                title: 'Berhasil!',
+                html: `${result.message}<br><pre>${JSON.stringify(result.debug, null, 2)}</pre>`,
+                icon: 'success',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+                title: 'Info',
+                html: `${result.message}<br><pre>${JSON.stringify(result.debug, null, 2)}</pre>`,
+                icon: 'info'
+            });
         }
-
-        const scanButton = document.getElementById('openScannerBtn');
-        if (scanButton) scanButton.disabled = true;
-
-        try {
-            
- const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    },
-    credentials: 'same-origin', // <=== PENTING
-    body: JSON.stringify({ kode_qr: decodedText })
-});
-
-
-            // Pastikan JSON
-            let result;
-            try {
-                result = await response.json();
-            } catch (e) {
-                Swal.fire('Error', 'Response server tidak valid: ' + e.message, 'error');
-                stopScanner();
-                return;
-            }
-
-            // Debug info untuk developer / pengajar
-            console.log('DEBUG SCAN RESULT:', result);
-
-            if (result.status === 'success') {
-                Swal.fire({
-                    title: 'Berhasil!',
-                    text: result.message,
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            } else {
-                Swal.fire('Info', result.message || 'Terjadi kesalahan saat scan.', 'info');
-            }
-
-        } catch (error) {
-            Swal.fire('Error', 'Gagal menyimpan hasil scan: ' + error.message, 'error');
-        }
-
-        stopScanner();
-
-        setTimeout(() => {
-            if (scanButton) scanButton.disabled = false;
-        }, 3000);
+    } catch (error) {
+        Swal.fire({
+            title: 'Error',
+            html: `Gagal menyimpan hasil scan.<br>${error}`,
+            icon: 'error'
+        });
     }
 
-    function onScanFailure(error) {
-        // Bisa tampilkan jika ingin debug scanning tiap frame
-        // console.warn(`QR Scan failed: ${error}`);
-    }
+    stopScanner();
 
-    async function stopScanner() {
-        if (html5QrCode && isScanning) {
-            await html5QrCode.stop();
-            isScanning = false;
-        }
-        overlay.classList.add('d-none');
-    }
+    setTimeout(() => {
+        if (scanButton) scanButton.disabled = false;
+    }, 3000);
+}
 });
 </script>
 @endsection
