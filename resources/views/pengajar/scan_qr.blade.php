@@ -140,14 +140,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (scanButton) scanButton.disabled = true;
 
         try {
-            const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ kode_qr: decodedText })
-            });
+            // ganti dengan domain
+           const response = await fetch('https://projectpresensi-production-92ca.up.railway.app', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    },
+    credentials: 'same-origin', // wajib supaya cookie session dikirim
+    body: JSON.stringify({ kode_qr: decodedText })
+});
 
             // Pastikan JSON
             let result;
