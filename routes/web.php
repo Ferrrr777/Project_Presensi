@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Admin\RescheduleController;
 use App\Http\Controllers\Pengajar\PresensiController;
 use App\Http\Controllers\Admin\LaporanPresensiController;
+use App\Http\Controllers\Pengajar\PresensiScanController;
+
 
 
 
@@ -83,7 +85,7 @@ Route::post('/logout', function (Request $request) {
     $request->session()->invalidate();
     $request->session()->regenerateToken();
 
-    return redirect('/login')->with('success', 'Anda telah logout.');
+    return redirect('/')->with('success', 'Anda telah logout.');
 })->name('logout');
 
 // =======================
@@ -146,6 +148,7 @@ Route::prefix('pengajar')->middleware('auth:pengajars')->name('pengajar.')->grou
     
     Route::get('presensi', [PresensiController::class, 'index'])->name('presensi.index');
     Route::post('presensi/store', [PresensiController::class, 'store'])->name('presensi.store');
+     Route::post('presensi-scan/store', [PresensiScanController::class, 'store'])->name('presensi.scan.store');
 
     Route::get('materi', function(){ return view('pengajar.materi'); })->name('materi');
      

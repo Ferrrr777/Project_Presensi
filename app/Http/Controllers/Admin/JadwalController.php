@@ -37,7 +37,8 @@ public function index()
             'hari' => 'required|string',
             'jam_mulai' => 'required',
             'jam_selesai' => 'required|after:jam_mulai',
-        ]);
+        ]
+    );
 
         Jadwal::create($request->all());
 

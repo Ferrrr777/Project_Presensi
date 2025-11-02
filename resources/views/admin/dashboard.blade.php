@@ -293,26 +293,7 @@
                         </div>
 
                         <div class="modal-body">
-                            {{-- Error validasi umum --}}
-                            @error('jadwal_id')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            @error('tanggal_baru')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            @error('jam_mulai_baru')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            @error('jam_selesai_baru')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            @error('pengajar_id')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-                            @error('hari_baru')
-                                <div class="alert alert-danger">{{ $message }}</div>
-                            @enderror
-
+                            
                             {{-- Input Tanggal Baru --}}
                             <div class="mb-3">
                                 <label class="form-label">Tanggal Baru</label>

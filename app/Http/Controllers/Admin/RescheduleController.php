@@ -40,7 +40,7 @@ class RescheduleController extends Controller
     } catch (\Exception $e) {
         Log::error('Error loading reschedule: ' . $e->getMessage());
         return redirect()->back()->with('error', 'Gagal memuat data reschedule.');
-    }
+    }   
 }
 
 
@@ -50,11 +50,12 @@ class RescheduleController extends Controller
         $validated = $request->validate([
             'jadwal_id' => 'required|exists:jadwals,id',
             'tanggal_baru' => 'required|date|after_or_equal:today',
-            'jam_mulai_baru' => 'required|date_format:H:i',
-            'jam_selesai_baru' => 'required|date_format:H:i|after:jam_mulai_baru',
+            'jam_mulai_baru' => 'required|date_format:H:i:s',
+            'jam_selesai_baru' => 'required|date_format:H:i:s|after:jam_mulai_baru',
             'pengajar_id' => 'required|exists:pengajars,id',
             'alasan' => 'nullable|string|max:500',
         ], [
+            
             'jam_selesai_baru.after' => 'Jam selesai harus setelah jam mulai.',
             'tanggal_baru.after_or_equal' => 'Tanggal baru harus hari ini atau setelahnya.',
             'pengajar_id.exists' => 'Pengajar tidak valid.',
