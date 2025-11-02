@@ -176,6 +176,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (scanButton) scanButton.disabled = false;
     }, 3000);
 }
+
+
+    function onScanFailure(error) {
+        // Bisa tampilkan jika ingin debug scanning tiap frame
+        // console.warn(`QR Scan failed: ${error}`);
+    }
+
+    async function stopScanner() {
+        if (html5QrCode && isScanning) {
+            await html5QrCode.stop();
+            isScanning = false;
+        }
+        overlay.classList.add('d-none');
+    }
 });
 </script>
 @endsection
