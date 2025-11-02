@@ -52,7 +52,8 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+   // 'url' => env('APP_URL', 'http://localhost'),
+     'url' => env('APP_URL', 'https://projectpresensi-production-92ca.up.railway.app'),
 
     /*
     |--------------------------------------------------------------------------
