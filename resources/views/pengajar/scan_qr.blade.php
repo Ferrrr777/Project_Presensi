@@ -114,59 +114,81 @@ document.addEventListener('DOMContentLoaded', function () {
                 await html5QrCode.start(
                     cameraId,
                     { fps: 10, qrbox: { width: 250, height: 250 } },
-                    onScanSuccess
+                    onScanSuccess,
+                    onScanFailure
                 );
                 isScanning = true;
             } else {
                 Swal.fire('Gagal', 'Tidak ada kamera ditemukan.', 'error');
             }
         } catch (err) {
-            Swal.fire('Error', 'Tidak bisa mengakses kamera.', 'error');
+            Swal.fire('Error', 'Tidak bisa mengakses kamera: ' + err.message, 'error');
         }
     });
 
     closeBtn.addEventListener('click', stopScanner);
 
-  async function onScanSuccess(decodedText) {
-    console.log('QR:', decodedText);
+    async function onScanSuccess(decodedText) {
+        console.log('QR:', decodedText);
 
-    const scanButton = document.getElementById('openScannerBtn');
-    if (scanButton) scanButton.disabled = true; // nonaktifkan tombol sementara
-
-    try {
-        const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ kode_qr: decodedText })
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            Swal.fire({
-                title: 'Berhasil!',
-                text: result.message,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else {
-            Swal.fire('Info', result.message, 'info');
+        if (!decodedText) {
+            Swal.fire('Error', 'QR tidak terbaca.', 'error');
+            return;
         }
-    } catch (error) {
-        Swal.fire('Error', 'Gagal menyimpan hasil scan.', 'error');
-    }
-    
-    stopScanner();
 
-    // Re-enable tombol hanya kalau ingin ulang (opsional)
-    setTimeout(() => {
-        if (scanButton) scanButton.disabled = false;
-    }, 3000);
-}
+        const scanButton = document.getElementById('openScannerBtn');
+        if (scanButton) scanButton.disabled = true;
+
+        try {
+            const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ kode_qr: decodedText })
+            });
+
+            // Pastikan JSON
+            let result;
+            try {
+                result = await response.json();
+            } catch (e) {
+                Swal.fire('Error', 'Response server tidak valid: ' + e.message, 'error');
+                stopScanner();
+                return;
+            }
+
+            // Debug info untuk developer / pengajar
+            console.log('DEBUG SCAN RESULT:', result);
+
+            if (result.status === 'success') {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: result.message,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire('Info', result.message || 'Terjadi kesalahan saat scan.', 'info');
+            }
+
+        } catch (error) {
+            Swal.fire('Error', 'Gagal menyimpan hasil scan: ' + error.message, 'error');
+        }
+
+        stopScanner();
+
+        setTimeout(() => {
+            if (scanButton) scanButton.disabled = false;
+        }, 3000);
+    }
+
+    function onScanFailure(error) {
+        // Bisa tampilkan jika ingin debug scanning tiap frame
+        // console.warn(`QR Scan failed: ${error}`);
+    }
 
     async function stopScanner() {
         if (html5QrCode && isScanning) {
