@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (error) {
         Swal.fire('Error', 'Gagal menyimpan hasil scan.', 'error');
     }
-
+    
     stopScanner();
 
     // Re-enable tombol hanya kalau ingin ulang (opsional)
