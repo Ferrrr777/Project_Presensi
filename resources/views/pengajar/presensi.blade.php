@@ -1,46 +1,32 @@
-@extends('layouts.app')
-
-@section('title', 'Presensi Hari Ini')
+@extends('layouts.app') 
 
 @section('content')
-<div class="container-fluid py-4 px-3 px-md-4">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                <h1 class="mb-3 mb-md-0 fw-bold text-primary animate__animated animate__fadeInDown">
-                    <i class="bi bi-calendar-check me-2"></i>Presensi Hari Ini
-                </h1>
-                <div class="badge bg-info text-white fs-6 px-3 py-2 animate__animated animate__fadeInRight">
-                    <i class="bi bi-calendar-event me-1"></i>{{ $tanggal }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Card -->
+<!-- Konten tetap sama -->
+<div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <div class="card shadow-lg border-0 rounded-4 animate__animated animate__fadeInUp">
-                <div class="card-header bg-gradient-primary text-white text-center py-3">
-                    <h4 class="mb-0 fw-bold">
-                        <i class="bi bi-list-check me-2"></i>Daftar Jadwal Presensi
-                    </h4>
-                    <small class="text-white-50">Kelola kehadiran murid dengan mudah</small>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-check me-2"></i>Presensi Pengajar
+                    </h5>
+                    <small class="text-light">Tanggal: {{ \Carbon\Carbon::parse($tanggal)->format('d-m-Y') }}</small>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body">
                     <!-- Desktop Table View -->
                     <div class="d-none d-md-block">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0" id="presensiTable">
-                                <thead class="table-primary text-center">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
                                     <tr>
-                                        <th class="border-0 fw-bold">#</th>
-                                        <th class="border-0 fw-bold">Nama Murid</th>
-                                        <th class="border-0 fw-bold">Alat Musik</th>
-                                        <th class="border-0 fw-bold">Waktu</th>
-                                        <th class="border-0 fw-bold">Status</th>
-                                        <th class="border-0 fw-bold">Aksi</th>
+                                        <th class="text-center">#</th>
+                                        <th>Nama (Siswa)</th>
+                                        <th>Alat Musik</th>
+                                        <th class="text-center">Jam Mulai - Selesai</th>
+                                        <th class="text-center">Status Les</th>
+                                        <th class="text-center">Status Presensi</th>
+                                        <th class="text-center">Materi</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -49,12 +35,24 @@
                                             $alat_id = $jadwal->alatMusik->id ?? $jadwal->alat_id;
                                             $key = $jadwal->murid_id.'-'.$alat_id;
                                             $presensi = $presensis[$key] ?? null;
-
+                                            
                                             // Format jam hanya H:i
                                             $jamMulai = $jadwal->jam_mulai_baru ?? $jadwal->jam_mulai;
-                                            $jamSelesai = $jadwal->jam_selesai_baru ?? $jadwal->jam_selesai;
-                                            $jamMulaiFormatted = \Carbon\Carbon::parse($jamMulai)->format('H:i');
-                                            $jamSelesaiFormatted = \Carbon\Carbon::parse($jamSelesai)->format('H:i');
+                                            // Jika field jam_selesai ada, gunakan itu; jika tidak, hitung otomatis (misalnya +1 jam)
+                                            $jamSelesai = $jadwal->jam_selesai_baru ?? $jadwal->jam_selesai ?? null;
+                                            if (!$jamSelesai && $jamMulai) {
+                                                // Hitung jam selesai = jam mulai + 1 jam (durasi default)
+                                                $jamSelesai = \Carbon\Carbon::parse($jamMulai)->addHour()->format('H:i:s');
+                                            }
+                                            $jamMulaiFormatted = $jamMulai ? \Carbon\Carbon::parse($jamMulai)->format('H:i') : 'N/A';
+                                            $jamSelesaiFormatted = $jamSelesai ? \Carbon\Carbon::parse($jamSelesai)->format('H:i') : 'N/A';
+                                            
+                                            // Hitung status les berdasarkan waktu sekarang
+                                            $now = \Carbon\Carbon::now();
+                                            $jamMulaiCarbon = $jamMulai ? \Carbon\Carbon::parse($jamMulai) : null;
+                                            $jamSelesaiCarbon = $jamSelesai ? \Carbon\Carbon::parse($jamSelesai) : null;
+                                            $lesSelesai = $jamSelesaiCarbon && $now->gte($jamSelesaiCarbon);
+                                            $lesBerlangsung = $jamMulaiCarbon && $jamSelesaiCarbon && $now->gte($jamMulaiCarbon) && $now->lt($jamSelesaiCarbon);
                                         @endphp
                                         <tr class="animate__animated animate__fadeInLeft" style="animation-delay: {{ $index * 0.05 }}s;">
                                             <td class="text-center fw-bold text-muted">{{ $index + 1 }}</td>
@@ -74,6 +72,15 @@
                                                 {{ $jamMulaiFormatted }} - {{ $jamSelesaiFormatted }}
                                             </td>
                                             <td class="text-center">
+                                                @if($lesBerlangsung)
+                                                    <span class="badge bg-success">Les sedang berlangsung</span>
+                                                @elseif($lesSelesai)
+                                                    <span class="badge bg-danger">Les telah selesai</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Les belum dimulai</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
                                                 <span class="badge rounded-pill fs-6 px-3 py-2 
                                                     @if($presensi)
                                                         {{ $presensi->status === 'hadir' ? 'bg-success' : 'bg-danger' }}
@@ -85,11 +92,21 @@
                                                 </span>
                                             </td>
                                             <td class="text-center">
+    <input type="text" class="form-control form-control-sm input-materi" 
+       placeholder="Isi materi..." 
+       data-id="{{ $jadwal->murid_id }}" 
+       data-alat="{{ $alat_id }}"
+       value="{{ $presensi->materi ?? '' }}"
+       @if($lesSelesai) disabled @endif>
+
+</td>
+
+                                            <td class="text-center">
                                                 <div class="btn-group btn-group-sm" role="group" aria-label="Aksi Presensi">
                                                     <button class="btn btn-success btn-hadir shadow-sm position-relative"
                                                         data-id="{{ $jadwal->murid_id }}"
                                                         data-alat="{{ $alat_id }}"
-                                                        @if($presensi && $presensi->status === 'hadir') disabled @endif
+                                                        @if($lesSelesai) disabled @endif 
                                                         aria-label="Tandai Hadir">
                                                         <i class="bi bi-check-circle-fill me-1"></i>
                                                         <span class="d-none d-sm-inline">Hadir</span>
@@ -97,7 +114,7 @@
                                                     <button class="btn btn-danger btn-tidak shadow-sm position-relative"
                                                         data-id="{{ $jadwal->murid_id }}"
                                                         data-alat="{{ $alat_id }}"
-                                                        @if($presensi && $presensi->status === 'tidak_hadir') disabled @endif
+                                                        @if($lesSelesai) disabled @endif   
                                                         aria-label="Tandai Tidak Hadir">
                                                         <i class="bi bi-x-circle-fill me-1"></i>
                                                         <span class="d-none d-sm-inline">Tidak Hadir</span>
@@ -107,7 +124,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-5">
+                                            <td colspan="7" class="text-center py-5">
                                                 <i class="bi bi-info-circle fs-1 text-muted mb-3"></i>
                                                 <h5 class="text-muted">Tidak ada jadwal presensi hari ini</h5>
                                                 <p class="text-muted">Silakan periksa kembali tanggal atau hubungi admin.</p>
@@ -129,9 +146,19 @@
 
                                 // Format jam hanya H:i
                                 $jamMulai = $jadwal->jam_mulai_baru ?? $jadwal->jam_mulai;
-                                $jamSelesai = $jadwal->jam_selesai_baru ?? $jadwal->jam_selesai;
-                                $jamMulaiFormatted = \Carbon\Carbon::parse($jamMulai)->format('H:i');
-                                $jamSelesaiFormatted = \Carbon\Carbon::parse($jamSelesai)->format('H:i');
+                                $jamSelesai = $jadwal->jam_selesai_baru ?? $jadwal->jam_selesai ?? null;
+                                if (!$jamSelesai && $jamMulai) {
+                                    $jamSelesai = \Carbon\Carbon::parse($jamMulai)->addHour()->format('H:i:s');
+                                }
+                                $jamMulaiFormatted = $jamMulai ? \Carbon\Carbon::parse($jamMulai)->format('H:i') : 'N/A';
+                                $jamSelesaiFormatted = $jamSelesai ? \Carbon\Carbon::parse($jamSelesai)->format('H:i') : 'N/A';
+                                
+                                // Hitung status les
+                                $now = \Carbon\Carbon::now();
+                                $jamMulaiCarbon = $jamMulai ? \Carbon\Carbon::parse($jamMulai) : null;
+                                $jamSelesaiCarbon = $jamSelesai ? \Carbon\Carbon::parse($jamSelesai) : null;
+                                $lesSelesai = $jamSelesaiCarbon && $now->gte($jamSelesaiCarbon);
+                                $lesBerlangsung = $jamMulaiCarbon && $jamSelesaiCarbon && $now->gte($jamMulaiCarbon) && $now->lt($jamSelesaiCarbon);
                             @endphp
                             <div class="mobile-card p-3 border-bottom animate__animated animate__fadeInUp" style="animation-delay: {{ $index * 0.05 }}s;">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
@@ -144,31 +171,52 @@
                                             <small class="text-muted">{{ $jadwal->alatMusik->nama ?? 'Tidak ada alat' }}</small>
                                         </div>
                                     </div>
-                                    <span class="badge rounded-pill fs-6 px-2 py-1 
-                                        @if($presensi)
-                                            {{ $presensi->status === 'hadir' ? 'bg-success' : 'bg-danger' }}
-                                        @else
-                                            bg-secondary
-                                        @endif"
-                                        id="status-mobile-{{ $jadwal->murid_id }}-{{ $alat_id }}">
-                                        {{ $presensi ? ucfirst(str_replace('_',' ',$presensi->status)) : 'Belum diisi' }}
-                                    </span>
+                                    <div class="text-end">
+                                        <span class="badge rounded-pill fs-6 px-2 py-1 
+                                            @if($presensi)
+                                                {{ $presensi->status === 'hadir' ? 'bg-success' : 'bg-danger' }}
+                                            @else
+                                                bg-secondary
+                                            @endif"
+                                            id="status-mobile-{{ $jadwal->murid_id }}-{{ $alat_id }}">
+                                            {{ $presensi ? ucfirst(str_replace('_',' ',$presensi->status)) : 'Belum diisi' }}
+                                        </span>
+                                        <br>
+                                        <small class="text-muted mt-1">
+                                            @if($lesBerlangsung)
+                                                <i class="bi bi-play-circle-fill text-success"></i> Les sedang berlangsung
+                                            @elseif($lesSelesai)
+                                                <i class="bi bi-stop-circle-fill text-danger"></i> Les telah selesai
+                                            @else
+                                                <i class="bi bi-pause-circle-fill text-secondary"></i> Les belum dimulai
+                                            @endif
+                                        </small>
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <i class="bi bi-clock me-1 text-muted"></i>
                                     <span class="text-muted">{{ $jamMulaiFormatted }} - {{ $jamSelesaiFormatted }}</span>
                                 </div>
+ <div class="mb-2">
+       <input type="text" class="form-control form-control-sm input-materi" 
+       placeholder="Isi materi..." 
+       data-id="{{ $jadwal->murid_id }}" 
+       data-alat="{{ $alat_id }}"
+       value="{{ $presensi->materi ?? '' }}"
+       @if($lesSelesai) disabled @endif>
+    </div>
+                                 
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-success btn-sm flex-fill btn-hadir shadow-sm"
                                         data-id="{{ $jadwal->murid_id }}"
                                         data-alat="{{ $alat_id }}"
-                                        @if($presensi && $presensi->status === 'hadir') disabled @endif>
+                                        @if($lesSelesai) disabled @endif>  <!-- Hanya disabled jika les selesai -->
                                         <i class="bi bi-check-circle-fill me-1"></i>Hadir
                                     </button>
                                     <button class="btn btn-danger btn-sm flex-fill btn-tidak shadow-sm"
                                         data-id="{{ $jadwal->murid_id }}"
                                         data-alat="{{ $alat_id }}"
-                                        @if($presensi && $presensi->status === 'tidak_hadir') disabled @endif>
+                                        @if($lesSelesai) disabled @endif>  <!-- Hanya disabled jika les selesai -->
                                         <i class="bi bi-x-circle-fill me-1"></i>Tidak Hadir
                                     </button>
                                 </div>
@@ -194,274 +242,138 @@
     </div>
 </div>
 
+@endsection
+
+@section('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Pastikan jQuery di-include -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Pastikan SweetAlert2 di-include -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('.btn-hadir, .btn-tidak');
-    const loadingOverlay = document.getElementById('loadingOverlay');
+document.addEventListener("DOMContentLoaded", function() {
+    console.log('Script loaded'); // Debug: Pastikan script di-load
 
-    buttons.forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            const murid_id = e.target.closest('button').dataset.id;
-            const alat_id = e.target.closest('button').dataset.alat;
-            const status = btn.classList.contains('btn-hadir') ? 'hadir' : 'tidak_hadir';
+   // Event listener untuk tombol Hadir
+$(document).on('click', '.btn-hadir', function() {
+    const muridId = $(this).data('id');
+    const alatId = $(this).data('alat');
 
-            // Disable buttons and show loading
-            const rowButtons = e.target.closest('.btn-group, .d-flex').querySelectorAll('button');
-            rowButtons.forEach(b => b.disabled = true);
-            loadingOverlay.classList.remove('d-none');
+    // Cari input materi di card/row yang sama
+    const materiInput = $(this).closest('.mobile-card, tr').find('.input-materi');
+    const materi = materiInput.val()?.trim();
 
-            // Add loading spinner to clicked button
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading...';
+    if (!materi) {
+        Swal.fire({
+            title: '⚠️ Wajib diisi!',
+            text: 'Silakan isi materi sebelum menandai presensi.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
 
-            try {
-                const response = await fetch("{{ route('pengajar.presensi.store') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        murid_id,
-                        alat_id,
-                        status
-                    })
-                });
+    updatePresensi(muridId, alatId, 'hadir', materi, $(this));
+});
 
-                const result = await response.json();
+// Event listener untuk tombol Tidak Hadir
+$(document).on('click', '.btn-tidak', function() {
+    const muridId = $(this).data('id');
+    const alatId = $(this).data('alat');
 
-                if (response.ok && result.success) {
-                    // Update badge status (both desktop and mobile)
-                    const badgeDesktop = document.getElementById(`status-${murid_id}-${alat_id}`);
-                    const badgeMobile = document.getElementById(`status-mobile-${murid_id}-${alat_id}`);
-                    const displayStatus = status === 'hadir' ? 'Hadir' : 'Tidak Hadir';
-                    
-                    if (badgeDesktop) {
-                        badgeDesktop.textContent = displayStatus;
-                        badgeDesktop.className = `badge rounded-pill fs-6 px-3 py-2 ${status === 'hadir' ? 'bg-success' : 'bg-danger'}`;
-                    }
-                    if (badgeMobile) {
-                        badgeMobile.textContent = displayStatus;
-                        badgeMobile.className = `badge rounded-pill fs-6 px-2 py-1 ${status === 'hadir' ? 'bg-success' : 'bg-danger'}`;
-                    }
+    const materiInput = $(this).closest('.mobile-card, tr').find('.input-materi');
+    const materi = materiInput.val()?.trim();
 
-                    // Disable/enable buttons
-                    if (status === 'hadir') {
-                        btn.disabled = true;
-                        btn.closest('.btn-group, .d-flex').querySelector('.btn-tidak').disabled = false;
-                    } else {
-                        btn.disabled = true;
-                        btn.closest('.btn-group, .d-flex').querySelector('.btn-hadir').disabled = false;
-                    }
+    if (!materi) {
+        Swal.fire({
+            title: '⚠️ Wajib diisi!',
+            text: 'Silakan isi materi sebelum menandai presensi.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
 
-                    // Success notification
-                    Swal.fire({
-                        title: '✅ Berhasil!',
-                        text: result.message || 'Presensi berhasil diperbarui!',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        toast: true,
-                        position: 'top-end'
-                    });
-                } else {
-                    // Error notification
-                    Swal.fire({
-                        title: '❌ Gagal!',
-                        text: result.message || 'Gagal update presensi! Silakan coba lagi.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    // Re-enable buttons
-                    rowButtons.forEach(b => b.disabled = false);
-                }
-            } catch (err) {
-                console.error(err);
+    updatePresensi(muridId, alatId, 'tidak_hadir', materi, $(this));
+});
+
+
+function updatePresensi(muridId, alatId, status, materi, button) {
+    $('#loadingOverlay').removeClass('d-none'); // Tampilkan loading
+
+    $.ajax({
+        url: '{{ route("pengajar.presensi.store") }}',
+        type: 'POST',
+        data: {
+            murid_id: muridId,
+            alat_id: alatId,
+            status: status,
+            materi: materi,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            $('#loadingOverlay').addClass('d-none'); // Sembunyikan loading
+            if (response.success) {
+                $('#status-' + muridId + '-' + alatId)
+                    .removeClass('bg-success bg-danger bg-secondary')
+                    .addClass(status === 'hadir' ? 'bg-success' : 'bg-danger')
+                    .text(status === 'hadir' ? 'Hadir' : 'Tidak Hadir');
+
+                $('#status-mobile-' + muridId + '-' + alatId)
+                    .removeClass('bg-success bg-danger bg-secondary')
+                    .addClass(status === 'hadir' ? 'bg-success' : 'bg-danger')
+                    .text(status === 'hadir' ? 'Hadir' : 'Tidak Hadir');
+
                 Swal.fire({
-                    title: '❌ Terjadi Kesalahan!',
-                    text: 'Terjadi kesalahan! Silakan coba lagi.',
+                    title: '✅ Berhasil!',
+                    text: 'Presensi berhasil diperbarui.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true,
+                    position: 'top-end'
+                });
+            } else {
+                Swal.fire({
+                    title: '❌ Gagal!',
+                    text: response.message,
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
-                // Re-enable buttons
-                rowButtons.forEach(b => b.disabled = false);
-            } finally {
-                // Hide loading
-                loadingOverlay.classList.add('d-none');
-                btn.innerHTML = originalContent;
             }
-        });
+        },
+        error: function(xhr) {
+            $('#loadingOverlay').addClass('d-none');
+            Swal.fire({
+                title: '⚠️ Terjadi Kesalahan',
+                text: xhr.responseJSON ? xhr.responseJSON.message : 'Unknown error',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
     });
+}
+
 });
+
 </script>
+@endsection
 
+@section('styles')
 <style>
-/* Professional and Aesthetic Styles */
-:root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --shadow-soft: 0 4px 6px rgba(0, 0, 0, 0.07);
-    --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.1);
-    --shadow-strong: 0 20px 40px rgba(0, 0, 0, 0.15);
-    --border-radius: 12px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.bg-gradient-primary {
-    background: var(--primary-gradient);
-}
-
-.card {
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-medium);
-    overflow: hidden;
-}
-
-.card-header {
-    border-bottom: none;
-    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
-}
-
-.table {
-    margin-bottom: 0;
-}
-
-.table thead th {
-    border-bottom: 2px solid #dee2e6;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.875rem;
-}
-
-.table tbody tr {
-    transition: var(--transition);
-}
-
-.table tbody tr:hover {
-    background-color: rgba(102, 126, 234, 0.05);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-soft);
-}
-
-.avatar-circle {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 0.875rem;
-}
-
-.btn-group .btn {
-    border-radius: 8px !important;
-    margin: 0 2px;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-group .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-soft);
-}
-
-.btn-group .btn:active {
-    transform: translateY(0);
-}
-
-.btn-group .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.badge {
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.animate__animated {
-    animation-duration: 0.8s;
-}
-
-/* Mobile Card Styles */
-.mobile-card {
-    background: #fff;
-    border-left: 4px solid #667eea;
-    transition: var(--transition);
-}
-
-.mobile-card:hover {
-    background-color: rgba(102, 126, 234, 0.02);
-    transform: translateX(5px);
-}
-
-.mobile-card .avatar-circle {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-}
-
-.mobile-card .btn {
-    border-radius: 8px !important;
-    transition: var(--transition);
-}
-
-.mobile-card .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-soft);
-}
-
-/* Responsive Enhancements */
-@media (max-width: 576px) {
-    .container-fluid {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
     }
-
-    .card-header h4 {
-        font-size: 1.25rem;
-    }
-
     .mobile-card {
-        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 10px;
     }
-
-    .mobile-card .d-flex.gap-2 .btn {
-        flex: 1;
-        margin: 0 2px;
+    .btn-group-sm .btn {
+        font-size: 0.8rem;
     }
-}
-
-@media (max-width: 768px) {
-    .d-flex.flex-column {
-        text-align: center;
-    }
-
-    .badge.bg-info {
-        margin-top: 1rem;
-    }
-}
-
-/* Loading States */
-.spinner-border-sm {
-    width: 1rem;
-    height: 1rem;
-}
-
-#loadingOverlay .spinner-border {
-    width: 3rem;
-    height: 3rem;
-}
-
-/* Accessibility */
-.btn[aria-label] {
-    position: relative;
-}
-
-.btn[aria-label]:focus {
-    outline: 2px solid #667eea;
-    outline-offset: 2px;
-}
 </style>
+@endsection

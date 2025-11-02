@@ -14,30 +14,35 @@ use App\Models\Pengajar;
 class RescheduleController extends Controller
 {
     // Menampilkan semua reschedule
-    public function index()
-    {
-        try {
-            $reschedules = Reschedule::with([
+   public function index()
+{
+    try {
+        // Hanya ambil reschedule dengan tanggal baru >= hari ini
+        $reschedules = Reschedule::with([
                 'jadwal.murid',
                 'jadwal.pengajar',
                 'jadwal.alatMusik',
                 'murid',
                 'pengajar',
                 'alatMusik'
-            ])->orderBy('created_at', 'desc')->get();
-            
- // Ambil semua pengajar untuk dropdown di modal edit
-            $pengajars = Pengajar::all();
+            ])
+            ->where('tanggal_baru', '>=', Carbon::today()) // 🔹 filter tanggal
+            ->orderBy('tanggal_baru', 'asc') // bisa ubah ke desc kalau mau terbaru di atas
+            ->get();
 
-            return view('admin.reschedule', [
-                'reschedules' => $reschedules,
-                'pengajars'   => $pengajars,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error loading reschedule: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal memuat data reschedule.');
-        }
+        // Ambil semua pengajar untuk dropdown di modal edit
+        $pengajars = Pengajar::all();
+
+        return view('admin.reschedule', [
+            'reschedules' => $reschedules,
+            'pengajars'   => $pengajars,
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error loading reschedule: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Gagal memuat data reschedule.');
     }
+}
+
 
     // Simpan reschedule
     public function store(Request $request)
@@ -45,15 +50,15 @@ class RescheduleController extends Controller
         $validated = $request->validate([
             'jadwal_id' => 'required|exists:jadwals,id',
             'tanggal_baru' => 'required|date|after_or_equal:today',
-            'jam_mulai_baru' => 'required|date_format:H:i:s',
-            'jam_selesai_baru' => 'required|date_format:H:i:s|after:jam_mulai_baru',
+            'jam_mulai_baru' => 'required|date_format:H:i',
+            'jam_selesai_baru' => 'required|date_format:H:i|after:jam_mulai_baru',
             'pengajar_id' => 'required|exists:pengajars,id',
             'alasan' => 'nullable|string|max:500',
         ], [
             'jam_selesai_baru.after' => 'Jam selesai harus setelah jam mulai.',
             'tanggal_baru.after_or_equal' => 'Tanggal baru harus hari ini atau setelahnya.',
             'pengajar_id.exists' => 'Pengajar tidak valid.',
-        ]);
+        ]); 
 
         DB::beginTransaction();
 

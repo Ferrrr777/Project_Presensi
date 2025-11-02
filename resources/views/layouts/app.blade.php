@@ -55,7 +55,7 @@
 
     /* Sidebar */
     .sidebar {
-      width: 260px;
+      width: 280px;
       background-color: var(--sidebar-bg);
       min-height: 100vh;
       padding: 1.5rem 0;
@@ -67,6 +67,7 @@
       z-index: 1000;
       border-right: 1px solid var(--border-color);
       box-shadow: var(--shadow-md);
+
     }
 
     .sidebar-header {
@@ -158,6 +159,7 @@
       color: var(--text-secondary);
       transition: var(--transition);
       font-weight: 500;
+      color: red;
     }
 
     .logout-btn:hover {
@@ -166,7 +168,8 @@
       border-color: var(--primary-color);
       transform: translateY(-1px);
       box-shadow: var(--shadow-sm);
-    }
+      
+      }
 
     .sidebar.collapsed {
       width: 80px;
@@ -203,8 +206,8 @@
       background-color: var(--topbar-bg);
       position: fixed;
       top: 0;
-      left: 260px;
-      width: calc(100% - 260px);
+      left: 280px;
+      width: calc(100% - 280px);
       height: 70px;
       display: flex;
       align-items: center;
@@ -306,7 +309,7 @@
 
     /* Content */
     .content {
-      margin-left: 260px;
+      margin-left: 280px;
       padding: 90px 2rem 2rem;
       transition: var(--transition);
       background-color: var(--content-bg);
@@ -366,6 +369,9 @@
   .switch {
     margin-left: 0.5rem; /* Kurangi margin jika perlu */
   }
+
+
+
 }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -411,10 +417,12 @@
       <a href="/admin/tambah-alatmusik" class="{{ request()->is('admin/tambah-alatmusik') ? 'active' : '' }}">
         <i class="fas fa-music"></i><span> Tambah Alat Musik</span>
       </a>
-  
-      <a href="/admin/laporan" class="{{ request()->is('admin/laporan') ? 'active' : '' }}">
-        <i class="fas fa-file-invoice"></i><span> Laporan Absensi</span>
-      </a>
+
+     <a href="{{ route('admin.laporan.presensi') }}" 
+   class="{{ request()->is('admin/laporan-presensi') ? 'active' : '' }}">
+  <i class="fas fa-file-invoice"></i><span> Laporan Presensi</span>
+</a>
+
        
 
         {{-- Cek jika user adalah pengajar --}}
@@ -507,7 +515,7 @@
       sidebar.classList.toggle('collapsed', sidebarCollapsed);
       localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
 
-      const sidebarWidth = sidebarCollapsed ? 80 : 260;
+      const sidebarWidth = sidebarCollapsed ? 80 : 280;
       if (content) content.style.marginLeft = sidebarCollapsed ? `${sidebarWidth}px` : '';
       if (topbar) {
         topbar.style.left = `${sidebarWidth}px`;

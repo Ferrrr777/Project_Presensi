@@ -17,6 +17,7 @@ class Presensi extends Model
         'alat_id',
         'status',
         'pengajar_id',
+        'materi',
     ];
 
     public function murid()

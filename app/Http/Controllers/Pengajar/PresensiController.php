@@ -36,7 +36,7 @@ class PresensiController extends Controller
         $jadwalHariIni = $jadwals->toBase()->merge($reschedules->toBase())->unique(function ($item) {
             $alatId = $item->alatMusik->id ?? $item->alat_id ?? $item->alat_musik_id;
            return $item->murid_id . '-' . $alatId;
-        });
+        }); 
         // Urutkan berdasarkan jam mulai (jam_mulai_baru dulu jika ada, kalau tidak jam_mulai)
           $jadwalHariIni = $jadwalHariIni->sortBy(function ($item) {
          $jamMulai = $item->jam_mulai_baru ?? $item->jam_mulai;
@@ -67,7 +67,8 @@ class PresensiController extends Controller
         $validator = Validator::make($request->all(), [
             'murid_id' => 'required|exists:murids,id',
             'alat_id' => 'required|exists:alat_musiks,id',
-            'status' => 'required|in:hadir,tidak_hadir'
+            'status' => 'required|in:hadir,tidak_hadir',
+            'materi' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -102,7 +103,8 @@ class PresensiController extends Controller
                     'pengajar_id' => $pengajar->id
                 ],
                 [
-                    'status' => $request->status
+                    'status' => $request->status,
+                    'materi' => $request->materi // Simpan materi
                 ]
             );
 

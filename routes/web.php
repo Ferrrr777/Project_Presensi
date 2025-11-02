@@ -13,13 +13,15 @@ use App\Http\Controllers\Admin\PengajarController;
 use App\Http\Controllers\Admin\JadwalController;
 use App\Http\Controllers\Admin\RescheduleController;
 use App\Http\Controllers\Pengajar\PresensiController;
+use App\Http\Controllers\Admin\LaporanPresensiController;
+
 
 
 // =======================
 // HALAMAN LOGIN / UTAMA
 // =======================
 
-Route::get('/login', function () {
+Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
@@ -94,12 +96,19 @@ Route::prefix('admin')->middleware('auth:web')->name('admin.')->group(function()
     Route::get('generate-qr', [QrController::class, 'index'])->name('generate-qr-form');
     Route::post('generate-qr', [QrController::class, 'generate'])->name('generate-qr');
 
+    
+
     // Pengajar
     Route::get('tambah-pengajar', [PengajarController::class, 'create'])->name('pengajar.create');
     Route::post('tambah-pengajar', [PengajarController::class, 'store'])->name('pengajar.store');
 
-    // Laporan
-    Route::get('laporan', fn() => view('admin.laporan_absensi'))->name('laporan');
+   
+   
+   // Laporan Presensi
+    Route::get('/laporan-presensi', [LaporanPresensiController::class, 'index'])->name('laporan.presensi');
+    Route::get('/laporan-presensi/export-excel', [LaporanPresensiController::class, 'exportExcel'])->name('laporan.exportExcel');
+
+  
 
     // Alat musik
     Route::get('tambah-alatmusik', [AlatMusikController::class, 'create'])->name('alatmusik.create');
@@ -135,7 +144,6 @@ Route::prefix('pengajar')->middleware('auth:pengajars')->name('pengajar.')->grou
     Route::get('materi', function(){ return view('pengajar.materi'); })->name('materi');
     Route::get('scan_qr', [AbsensiController::class, 'scanQrForm'])->name('scan-qr-form');
     
-// ✅ Presensi
     Route::get('presensi', [PresensiController::class, 'index'])->name('presensi.index');
     Route::post('presensi/store', [PresensiController::class, 'store'])->name('presensi.store');
 
