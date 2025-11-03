@@ -85,6 +85,7 @@
     }
 
     .sidebar-logo {
+
       max-width: 120px;
       height: auto;
       border-radius: 0.5rem;
@@ -383,7 +384,7 @@
   @if (empty($hideSidebar))
     <div class="sidebar" id="sidebar">
   <div class="sidebar-header">
-    <img src="{{ asset('images/logo.png') }}" alt="Logo Kawai Musik" class="sidebar-logo img-fluid">
+    <img src="{{ asset('images/logo.png') }}" alt="Logo Kawai Musik" class="sidebar-logo img-fluid" loading="lazy">
     <h4>Kawai Musik</h4>
   </div>
 
@@ -480,7 +481,7 @@
       <button class="sidebar-toggle d-lg-none me-2" id="mobileSidebarToggle">
         <i class="fas fa-bars"></i>
       </button>
-      <a class="navbar-brand " href="/admin/dashboard">Kawai Musik</a> 
+      <a class="navbar-brand " >Kawai Musik</a> 
 
       <div class="ms-auto d-flex align-items-center">
         <div id="dateTimeDisplay" class="me-3 d-none d-lg-block"></div> <!-- Sembunyikan datetime di tablet dan mobile -->
