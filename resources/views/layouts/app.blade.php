@@ -88,7 +88,6 @@
     width: 160px;                  /* Lebih besar */
     height: 160px;                 /* Sesuaikan tinggi */
     background-image: url('/images/logo.png');
-    background-size: contain;      /* Pertahankan proporsi */
     background-repeat: no-repeat;
     background-position: center;   /* Center logo di div */
     border-radius: 0.5rem;
