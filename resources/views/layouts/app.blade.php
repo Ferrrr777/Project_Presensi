@@ -211,6 +211,24 @@
       background-color: var(--text-secondary);
     }
 
+    .sidebar.collapsed .sidebar-header .sidebar-logo {
+    display: none;
+}
+    .sidebar-collapsed-text {
+  display: none;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.sidebar.collapsed .sidebar-collapsed-text {
+  display: block;
+}
+
+
     /* Topbar */
     .topbar {
       background-color: var(--topbar-bg);
@@ -395,6 +413,20 @@
   <div class="sidebar-header">
     <div class="sidebar-logo"></div>
    <h4>Kawai Musik</h4>
+
+   <h4 class="sidebar-collapsed-text">K
+  <br>a
+  <br>w
+  <br>a
+  <br>i
+  <br> 
+  <br>M
+  <br>u
+  <br>s
+  <br>i
+  <br>k
+</h4>
+
   </div>
 
   <ul class="nav-items">
