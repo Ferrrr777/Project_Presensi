@@ -86,7 +86,7 @@
 
     .sidebar-logo {
     max-width: 120px;          /* lebar logo */
-    height: auto;          /* tinggi logo */
+    height: 100px;          /* tinggi logo */
     background-image: url('/images/logo.png'); /* path gambar */
     background-size: contain;  /* agar proporsional */
     background-repeat: no-repeat;
