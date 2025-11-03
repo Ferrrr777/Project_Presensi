@@ -403,31 +403,31 @@
     </li>
 
     <li>
-        <a href="{{ route('murid.create') }}" class="{{ request()->routeIs('murid.create') ? 'active' : '' }}">
+        <a href="{{ route('admin.murid.create') }}" class="{{ request()->routeIs('admin.murid.create') ? 'active' : '' }}">
             <i class="fas fa-user-graduate"></i><span> Tambah Siswa</span>
         </a>
     </li>
 
     <li>
-        <a href="{{ route('pengajar.create') }}" class="{{ request()->routeIs('pengajar.create') ? 'active' : '' }}">
+        <a href="{{ route('admin.pengajar.create') }}" class="{{ request()->routeIs('admin.pengajar.create') ? 'active' : '' }}">
             <i class="fas fa-chalkboard-teacher"></i><span> Tambah Pengajar</span>
         </a>
     </li>
 
     <li>
-        <a href="{{ route('jadwal.index') }}" class="{{ request()->routeIs('jadwal.index') ? 'active' : '' }}">
+        <a href="{{ route('admin.jadwal.index') }}" class="{{ request()->routeIs('admin.jadwal.index') ? 'active' : '' }}">
             <i class="fas fa-calendar-alt"></i><span> Kelola Jadwal</span>
         </a>
     </li>
 
     <li>
-        <a href="{{ route('reschedule.index') }}" class="{{ request()->routeIs('reschedule.index') ? 'active' : '' }}">
+        <a href="{{ route('admin.reschedule.index') }}" class="{{ request()->routeIs('admin.reschedule.index') ? 'active' : '' }}">
             <i class="fas fa-calendar-check"></i><span> Reschedule</span>
         </a>
     </li>
 
     <li>
-        <a href="{{ route('alatmusik.create') }}" class="{{ request()->routeIs('alatmusik.create') ? 'active' : '' }}">
+        <a href="{{ route('admin.alatmusik.create') }}" class="{{ request()->routeIs('admin.alatmusik.create') ? 'active' : '' }}">
             <i class="fas fa-music"></i><span> Tambah Alat Musik</span>
         </a>
     </li>
