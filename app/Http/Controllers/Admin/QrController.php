@@ -67,13 +67,15 @@ class QrController extends Controller
             
             $qrCodeImage = QrCode::size(400)->generate($qrCodeData);
             
-            return redirect()->route('admin.generate-qr.index')->with([
-                'qrCodeImage' => $qrCodeImage,
-                'tanggal' => $qr->tanggal
-            ]);
+           return redirect()->route('admin.generate-qr-form')->with([
+    'qrCodeImage' => $qrCodeImage,
+    'tanggal' => $qr->tanggal
+]);
+
         } catch (\Exception $e) {
             Session::flash('error', 'Gagal generate QR Code. Silakan coba lagi.');
-            return redirect()->route('admin.generate-qr.index');
+            return redirect()->route('admin.generate-qr-form');
+
         }
     }
 }
