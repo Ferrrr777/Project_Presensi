@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function onScanFailure(error) {
         // Bisa tampilkan jika ingin debug scanning tiap frame
-        // console.warn(`QR Scan failed: ${error}`);
+         console.warn(`QR Scan failed: ${error}`);
     }
 
     async function stopScanner() {

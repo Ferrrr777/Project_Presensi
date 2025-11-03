@@ -144,13 +144,13 @@ Route::prefix('pengajar')->middleware('auth:pengajars')->name('pengajar.')->grou
     Route::get('dashboard', [AbsensiController::class, 'index'])->name('dashboard');
     
     Route::get('materi', function(){ return view('pengajar.materi'); })->name('materi');
+
     Route::get('scan_qr', [AbsensiController::class, 'scanQrForm'])->name('scan-qr-form');
+     Route::post('presensi-scan/store', [PresensiScanController::class, 'store'])->name('presensi.scan.store');
     
     Route::get('presensi', [PresensiController::class, 'index'])->name('presensi.index');
     Route::post('presensi/store', [PresensiController::class, 'store'])->name('presensi.store');
 
-     Route::post('presensi-scan/store', [PresensiScanController::class, 'store'])->name('presensi.scan.store');
-    
     Route::get('materi', function(){ return view('pengajar.materi'); })->name('materi');
      
     Route::get('laporan', function(){ return view('pengajar.laporan'); })->name('laporan');
