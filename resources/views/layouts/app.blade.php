@@ -99,6 +99,14 @@
   margin: 0 auto; /* center horizontal */
     }
 
+    /* Saat sidebar collapse — kecil, tapi tetap tampil */
+.sidebar.collapsed .sidebar-logo {
+  width: 50px;
+  height: 50px;
+  background-size: contain;
+  margin: 0 auto;
+}
+
     .sidebar-logo:hover {
       transform: scale(1.05);
     }
@@ -211,22 +219,8 @@
       background-color: var(--text-secondary);
     }
 
-    .sidebar.collapsed .sidebar-header .sidebar-logo {
-    display: none;
-}
+
    
-
-
-/* Saat sidebar collapse */
-.sidebar.collapsed .sidebar-logo {
-  width: 50px; /* ukuran logo kecil */
-  height: auto;
-}
-
-.sidebar.collapsed .sidebar-title {
-  opacity: 0;
-  visibility: hidden;
-}
 
     /* Topbar */
     .topbar {
