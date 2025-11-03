@@ -24,7 +24,7 @@
             <!-- Generate Form -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body text-center p-4">
-                    <form method="POST" action="{{ route('admin.generate-qr') }}" class="d-inline">
+                   <form method="POST" action="{{ secure_url(route('admin.generate-qr')) }}" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg">
                             <i class="fas fa-magic me-2"></i> Generate QR Hari Ini
