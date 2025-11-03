@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             Swal.fire({
                 title: 'Info',
-                html: `${result.message}<br><pre>${JSON.stringify(result.debug, null, 2)}</pre>`,
+                html: `${result.message}<br>`,
                 icon: 'info'
             });
         }
