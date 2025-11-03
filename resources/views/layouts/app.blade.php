@@ -215,26 +215,18 @@
     display: none;
 }
    
-.sidebar-collapsed-text {
-  display: none;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  font-weight: 700;
-  text-align: center;
-  color: var(--text-primary);
-  font-size: 1rem;
-  letter-spacing: 1px;
+
+
+/* Saat sidebar collapse */
+.sidebar.collapsed .sidebar-logo {
+  width: 50px; /* ukuran logo kecil */
+  height: auto;
 }
 
-.sidebar.collapsed .sidebar-logo,
 .sidebar.collapsed .sidebar-title {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
 }
-
-.sidebar.collapsed .sidebar-collapsed-text {
-  display: block;
-}
-
 
     /* Topbar */
     .topbar {
@@ -420,10 +412,6 @@
   <div class="sidebar-header">
     <div class="sidebar-logo"></div>
    <h4>Kawai Musik</h4>
-
-   <div class="sidebar-collapsed-text">K<br>a<br>w<br>a<br>i<br><br>M<br>u<br>s<br>i<br>k</div>
-
-
   </div>
 
   <ul class="nav-items">
