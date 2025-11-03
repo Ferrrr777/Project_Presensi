@@ -88,8 +88,8 @@
 
     .sidebar-logo {
  background-image: url('/images/logo.png'); /* path gambar */
-  width: 120px;       /* pastikan ada width tetap */
-  height: 100px;      /* height tetap */
+  width: 220px;       /* pastikan ada width tetap */
+  height: 200px;      /* height tetap */
   background-size: contain;  /* agar proporsional */
   background-repeat: no-repeat;
   background-position: center;
