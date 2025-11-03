@@ -390,54 +390,53 @@
   <ul class="nav-items">
     {{-- Cek apakah user adalah admin --}}
     @if(Auth::guard('web')->check() && Auth::guard('web')->user()->role === 'admin')
-
         <li>
-            <a href="{{ url('/admin/dashboard') }}" class="{{ request()->is('admin/dashboard') ? 'active' : '' }}">
-                <i class="fas fa-tachometer-alt"></i><span> Dashboard</span>
-            </a>
-        </li>
+        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <i class="fas fa-tachometer-alt"></i><span> Dashboard</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="{{ url('/admin/generate-qr') }}" class="{{ request()->is('admin/generate-qr') ? 'active' : '' }}">
-                <i class="fas fa-qrcode"></i><span> Generate QR</span>
-            </a>
-        </li>
+    <li>
+        <a href="{{ route('admin.generate-qr-form') }}" class="{{ request()->routeIs('admin.generate-qr-form') ? 'active' : '' }}">
+            <i class="fas fa-qrcode"></i><span> Generate QR</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="{{ url('/admin/tambah-siswa') }}" class="{{ request()->is('admin/tambah-siswa') ? 'active' : '' }}">
-                <i class="fas fa-user-graduate"></i><span> Tambah Siswa</span>
-            </a>
-        </li>
+    <li>
+        <a href="{{ route('murid.create') }}" class="{{ request()->routeIs('murid.create') ? 'active' : '' }}">
+            <i class="fas fa-user-graduate"></i><span> Tambah Siswa</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="{{ url('/admin/tambah-pengajar') }}" class="{{ request()->is('admin/tambah-pengajar') ? 'active' : '' }}">
-                <i class="fas fa-chalkboard-teacher"></i><span> Tambah Pengajar</span>
-            </a>
-        </li>
+    <li>
+        <a href="{{ route('pengajar.create') }}" class="{{ request()->routeIs('pengajar.create') ? 'active' : '' }}">
+            <i class="fas fa-chalkboard-teacher"></i><span> Tambah Pengajar</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="{{ url('/admin/kelola_jadwal') }}" class="{{ request()->is('admin/kelola_jadwal') ? 'active' : '' }}">
-                <i class="fas fa-calendar-alt"></i><span> Kelola Jadwal</span>
-            </a>
-        </li>
+    <li>
+        <a href="{{ route('jadwal.index') }}" class="{{ request()->routeIs('jadwal.index') ? 'active' : '' }}">
+            <i class="fas fa-calendar-alt"></i><span> Kelola Jadwal</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="{{ url('/admin/reschedule') }}" class="{{ request()->is('admin/reschedule') ? 'active' : '' }}">
-                <i class="fas fa-calendar-check"></i><span> Reschedule</span>
-            </a>
-        </li>
+    <li>
+        <a href="{{ route('reschedule.index') }}" class="{{ request()->routeIs('reschedule.index') ? 'active' : '' }}">
+            <i class="fas fa-calendar-check"></i><span> Reschedule</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="{{ url('/admin/tambah-alatmusik') }}" class="{{ request()->is('admin/tambah-alatmusik') ? 'active' : '' }}">
-                <i class="fas fa-music"></i><span> Tambah Alat Musik</span>
-            </a>
-        </li>
+    <li>
+        <a href="{{ route('alatmusik.create') }}" class="{{ request()->routeIs('alatmusik.create') ? 'active' : '' }}">
+            <i class="fas fa-music"></i><span> Tambah Alat Musik</span>
+        </a>
+    </li>
 
-        <li>
-            <a href="{{ route('admin.laporan.presensi') }}" class="{{ request()->is('admin/laporan-presensi') ? 'active' : '' }}">
-                <i class="fas fa-file-invoice"></i><span> Laporan Presensi</span>
-            </a>
-        </li>
+    <li>
+        <a href="{{ route('admin.laporan.presensi') }}" class="{{ request()->routeIs('admin.laporan.presensi') ? 'active' : '' }}">
+            <i class="fas fa-file-invoice"></i><span> Laporan Presensi</span>
+        </a>
+    </li>
 
        
 
