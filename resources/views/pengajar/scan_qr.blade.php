@@ -128,7 +128,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     closeBtn.addEventListener('click', stopScanner);
 
+    let scanned = false;
     async function onScanSuccess(decodedText) {
+     if (scanned) return; // jika sudah diproses, keluar
+    scanned = true;    
     console.log('QR:', decodedText);
 
     const scanButton = document.getElementById('openScannerBtn');
@@ -145,8 +148,6 @@ document.addEventListener('DOMContentLoaded', function () {
     credentials: 'include', // penting agar session terbawa
     body: JSON.stringify({ kode_qr: decodedText })
 });
-
-
         const result = await response.json();
 
         if (result.status === 'success') {
