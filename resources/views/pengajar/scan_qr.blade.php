@@ -135,15 +135,17 @@ document.addEventListener('DOMContentLoaded', function () {
     if (scanButton) scanButton.disabled = true;
 
     try {
-        const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            credentials: 'include', // penting agar session terbawa
-            body: JSON.stringify({ kode_qr: decodedText })
-        });
+       const response = await fetch('{{ route('pengajar.presensi.scan.store') }}', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        'X-Requested-With': 'XMLHttpRequest'
+    },
+    credentials: 'include', // penting agar session terbawa
+    body: JSON.stringify({ kode_qr: decodedText })
+});
+
 
         const result = await response.json();
 
