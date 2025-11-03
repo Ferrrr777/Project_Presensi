@@ -627,6 +627,56 @@
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
+
+    document.addEventListener('DOMContentLoaded', () => {
+  const links = document.querySelectorAll('.nav-items a'); // semua link sidebar
+  const mainContent = document.getElementById('mainContent');
+
+  links.forEach(link => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault(); // cegah reload halaman
+      const url = this.getAttribute('href');
+
+      // Hapus class active dari semua, lalu tambahkan ke yang diklik
+      links.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+
+      // Tampilkan indikator loading
+      mainContent.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-3">Memuat konten...</p></div>';
+
+      // Ambil konten menggunakan fetch
+      fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(response => {
+          if (!response.ok) throw new Error('Gagal memuat konten.');
+          return response.text();
+        })
+        .then(html => {
+          // Ambil hanya isi dari @yield('content')
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const newContent = doc.querySelector('#mainContent');
+          mainContent.innerHTML = newContent ? newContent.innerHTML : '<p>Konten tidak ditemukan.</p>';
+          window.history.pushState({}, '', url); // ubah URL tanpa reload
+        })
+        .catch(err => {
+          mainContent.innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+        });
+    });
+  });
+
+  // Tangani navigasi via tombol back/forward browser
+  window.addEventListener('popstate', () => {
+    fetch(location.href, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(res => res.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.querySelector('#mainContent');
+        mainContent.innerHTML = newContent ? newContent.innerHTML : '';
+      });
+  });
+});
+
     // Close mobile sidebar on outside click
     document.addEventListener('click', (e) => {
       if (window.innerWidth <= 768 && sidebar && !sidebar.contains(e.target) && !topbar.contains(e.target)) {
