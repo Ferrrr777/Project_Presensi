@@ -523,6 +523,7 @@
     const logoutBtn = document.getElementById('logoutBtn');
     const logoutForm = document.getElementById('logoutForm');
     const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+     const desktopSidebarToggle = document.getElementById('desktopSidebarToggle');
     const body = document.body;
 
     let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
@@ -539,8 +540,14 @@
         if (darkModeSwitch) darkModeSwitch.checked = true;
       }
     });
+    
 
     // Toggle Sidebar (Desktop)
+    if (desktopSidebarToggle) {
+  desktopSidebarToggle.addEventListener('click', () => {
+    toggleSidebar();
+  });
+}
     function toggleSidebar() {
       sidebarCollapsed = !sidebarCollapsed;
       sidebar.classList.toggle('collapsed', sidebarCollapsed);
@@ -553,6 +560,8 @@
         topbar.style.width = `calc(100% - ${sidebarWidth}px)`;
       }
     }
+  
+
 
     // Mobile Sidebar Toggle
     if (mobileSidebarToggle) {
