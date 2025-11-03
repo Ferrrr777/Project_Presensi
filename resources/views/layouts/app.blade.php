@@ -75,6 +75,8 @@
       text-align: center;
       border-bottom: 1px solid var(--border-color);
       margin-bottom: 2rem;
+      align-items: center;   /* center horizontal */
+      justify-content: center; /* center vertikal */
     }
 
     .sidebar-header h4 {
@@ -85,14 +87,12 @@
     }
 
     .sidebar-logo {
-    width: 160px;                  /* Lebih besar */
-    height: 160px;                 /* Sesuaikan tinggi */
-    background-image: url('/images/logo.png');
-    background-repeat: no-repeat;
-    background-position: center;   /* Center logo di div */
-    border-radius: 0.5rem;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
+      background-image: url('/images/logo.png'); /* path gambar */
+      max-width: 120px;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
     }
 
     .sidebar-logo:hover {
