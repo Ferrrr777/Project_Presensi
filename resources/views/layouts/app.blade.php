@@ -152,9 +152,12 @@
     }
 
     .logout-section {
-      margin-top: auto;
-      padding: 2rem 1.5rem 1.5rem;
-      border-top: 1px solid var(--border-color);
+  position: sticky;
+  bottom: 0;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--sidebar-bg); /* agar tidak transparan */
+  z-index: 10;
     }
 
     .logout-btn {
