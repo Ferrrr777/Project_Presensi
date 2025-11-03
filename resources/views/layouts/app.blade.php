@@ -84,18 +84,22 @@
       font-size: 1.25rem;
     }
 
-    .sidebar-logo {
+.sidebar-logo {
+    width: 120px;          /* lebar logo */
+    height: 50px;          /* tinggi logo */
+    background-image: url('/images/logo.png'); /* path gambar */
+    background-size: contain;  /* agar proporsional */
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
 
-      max-width: 120px;
-      height: auto;
-      border-radius: 0.5rem;
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
-    }
+.sidebar-logo:hover {
+    transform: scale(1.05);
+}
 
-    .sidebar-logo:hover {
-      transform: scale(1.05);
-    }
 
     .nav-items {
       list-style: none;
@@ -384,8 +388,8 @@
   @if (empty($hideSidebar))
     <div class="sidebar" id="sidebar">
   <div class="sidebar-header">
-    <img src="{{ asset('images/logo.png') }}" alt="Logo Kawai Musik" class="sidebar-logo img-fluid" loading="lazy">
-    <h4>Kawai Musik</h4>
+    <div class="sidebar-logo"></div>
+   <h4>Kawai Musik</h4>
   </div>
 
   <ul class="nav-items">
@@ -592,9 +596,6 @@
       }
     });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  @yield('scripts')
-
   <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
