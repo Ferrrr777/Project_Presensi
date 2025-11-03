@@ -214,7 +214,8 @@
     .sidebar.collapsed .sidebar-header .sidebar-logo {
     display: none;
 }
-    .sidebar-collapsed-text {
+   
+.sidebar-collapsed-text {
   display: none;
   writing-mode: vertical-rl;
   text-orientation: mixed;
@@ -222,6 +223,12 @@
   text-align: center;
   color: var(--text-primary);
   font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.sidebar.collapsed .sidebar-logo,
+.sidebar.collapsed .sidebar-title {
+  display: none;
 }
 
 .sidebar.collapsed .sidebar-collapsed-text {
@@ -414,18 +421,8 @@
     <div class="sidebar-logo"></div>
    <h4>Kawai Musik</h4>
 
-   <h4 class="sidebar-collapsed-text">K
-  <br>a
-  <br>w
-  <br>a
-  <br>i
-  <br> 
-  <br>M
-  <br>u
-  <br>s
-  <br>i
-  <br>k
-</h4>
+   <div class="sidebar-collapsed-text">K<br>a<br>w<br>a<br>i<br><br>M<br>u<br>s<br>i<br>k</div>
+
 
   </div>
 
