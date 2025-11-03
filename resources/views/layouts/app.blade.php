@@ -84,22 +84,19 @@
       font-size: 1.25rem;
     }
 
-.sidebar-logo {
-    width: 120px;          /* lebar logo */
-    height: 50px;          /* tinggi logo */
-    background-image: url('/images/logo.png'); /* path gambar */
-    background-size: contain;  /* agar proporsional */
-    background-repeat: no-repeat;
-    background-position: center;
-    border-radius: 0.5rem;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-}
+    .sidebar-logo {
+      background-image: url('/images/logo.png'); /* path gambar */
+      background-size: contain;  /* agar proporsional */
+      max-width: 120px;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
 
-.sidebar-logo:hover {
-    transform: scale(1.05);
-}
-
+    .sidebar-logo:hover {
+      transform: scale(1.05);
+    }
 
     .nav-items {
       list-style: none;
