@@ -540,17 +540,24 @@
     let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
 
     // Initialize states
-    window.addEventListener('DOMContentLoaded', () => {
-      if (sidebar && sidebarCollapsed) {
-        toggleSidebar();
-      }
+   window.addEventListener('DOMContentLoaded', () => {
+  if (sidebar && sidebarCollapsed) {
+    sidebar.classList.add('collapsed');
+    const sidebarWidth = 80;
+    if (content) content.style.marginLeft = `${sidebarWidth}px`;
+    if (topbar) {
+      topbar.style.left = `${sidebarWidth}px`;
+      topbar.style.width = `calc(100% - ${sidebarWidth}px)`;
+    }
+  }
 
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') {
-        body.setAttribute('data-theme', 'dark');
-        if (darkModeSwitch) darkModeSwitch.checked = true;
-      }
-    });
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    body.setAttribute('data-theme', 'dark');
+    if (darkModeSwitch) darkModeSwitch.checked = true;
+  }
+});
+
     
 
     // Toggle Sidebar (Desktop)
