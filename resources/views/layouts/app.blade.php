@@ -488,6 +488,11 @@
 {{-- Topbar --}}
 @if (empty($hideSidebar))
     <nav class="topbar">
+      <!-- Tombol toggle desktop -->
+      <button class="sidebar-toggle d-none d-lg-inline-flex me-2" id="desktopSidebarToggle">
+         <i class="fas fa-bars"></i>
+      </button>
+ <!-- Tombol toggle desktop -->
       <button class="sidebar-toggle d-lg-none me-2" id="mobileSidebarToggle">
         <i class="fas fa-bars"></i>
       </button>
