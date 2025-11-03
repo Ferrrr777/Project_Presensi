@@ -89,7 +89,7 @@
     .sidebar-logo {
       background-image: url('/images/logo.png'); /* path gambar */
       max-width: 120px;
-      height: auto;
+      height: 100px;
       border-radius: 0.5rem;
       box-shadow: var(--shadow-sm);
       transition: var(--transition);
