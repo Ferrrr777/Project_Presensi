@@ -87,12 +87,16 @@
     }
 
     .sidebar-logo {
-      background-image: url('/images/logo.png'); /* path gambar */
-      max-width: 120px;
-      height: 100px;
-      border-radius: 0.5rem;
-      box-shadow: var(--shadow-sm);
-      transition: var(--transition);
+ background-image: url('/images/logo.png'); /* path gambar */
+  width: 120px;       /* pastikan ada width tetap */
+  height: 100px;      /* height tetap */
+  background-size: contain;  /* agar proporsional */
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  margin: 0 auto; /* center horizontal */
     }
 
     .sidebar-logo:hover {
