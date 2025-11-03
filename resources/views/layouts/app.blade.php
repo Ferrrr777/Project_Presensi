@@ -85,12 +85,12 @@
     }
 
     .sidebar-logo {
-    max-width: 120px;          /* lebar logo */
-    height: 100px;          /* tinggi logo */
-    background-image: url('/images/logo.png'); /* path gambar */
-    background-size: contain;  /* agar proporsional */
+    width: 160px;                  /* Lebih besar */
+    height: 160px;                 /* Sesuaikan tinggi */
+    background-image: url('/images/logo.png');
+    background-size: contain;      /* Pertahankan proporsi */
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center;   /* Center logo di div */
     border-radius: 0.5rem;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
