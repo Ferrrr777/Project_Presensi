@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (result.status === 'success') {
             Swal.fire({
                 title: 'Berhasil!',
-                html: `${result.message}<br><pre>${JSON.stringify(result.debug, null, 2)}</pre>`,
+                html: `${result.message}<br>`,
                 icon: 'success',
                 timer: 3000,
                 showConfirmButton: false
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (error) {
         Swal.fire({
             title: 'Error',
-            html: `Gagal menyimpan hasil scan.<br>${error}`,
+            html: `Gagal menyimpan hasil scan.<br>`,
             icon: 'error'
         });
     }
@@ -178,13 +178,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (scanButton) scanButton.disabled = false;
     }, 3000);
 }
-
-
-    function onScanFailure(error) {
-        // Bisa tampilkan jika ingin debug scanning tiap frame
-         console.warn(`QR Scan failed: ${error}`);
-    }
-
     async function stopScanner() {
         if (html5QrCode && isScanning) {
             await html5QrCode.stop();
