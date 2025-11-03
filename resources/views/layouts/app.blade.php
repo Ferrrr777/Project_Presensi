@@ -447,6 +447,16 @@
             <i class="fas fa-file-invoice"></i><span> Laporan Presensi</span>
         </a>
     </li>
+    <li>
+        <a href="{{ route('admin.laporan.presensi') }}" class="{{ request()->routeIs('admin.laporan.presensi') ? 'active' : '' }}">
+            <i class="fas fa-file-invoice"></i><span> Laporan Presensi</span>
+        </a>
+    </li>
+    <li>
+        <a href="{{ route('admin.laporan.presensi') }}" class="{{ request()->routeIs('admin.laporan.presensi') ? 'active' : '' }}">
+            <i class="fas fa-file-invoice"></i><span> Laporan Presensi</span>
+        </a>
+    </li>
 
        
 
