@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('title', 'Scan QR Absensi - Pengajar')
-
 @section('content')
 <div class="container-fluid py-4">
     <div class="card border-0 shadow-sm bg-gradient-primary text-white mb-4">
