@@ -22,45 +22,43 @@ use App\Http\Controllers\Pengajar\PresensiScanController;
 // =======================
 // HALAMAN LOGIN / UTAMA
 // =======================
-
 Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
-// Proses login (POST)
+// =======================
+// PROSES LOGIN
+// =======================
 Route::post('/login', function (Request $request) {
     $credentials = $request->only('email', 'password');
 
-    // Validasi input
     $request->validate([
         'email' => 'required|email',
         'password' => 'required',
     ]);
 
-    // 🔹 Logout semua guard dulu
-    Auth::guard('web')->logout();
-    Auth::guard('pengajars')->logout();
+    // -----------------------
+    // 1️⃣ Coba login sebagai admin
+    // -----------------------
+    config(['session.cookie' => env('SESSION_COOKIE_ADMIN', Str::slug(env('APP_NAME', 'laravel')).'_admin_session')]);
 
-    // -----------------------
-    // 1️⃣ Coba login sebagai admin (guard: web)
-    // -----------------------
     if (Auth::guard('web')->attempt($credentials)) {
         $request->session()->regenerate();
 
         $user = Auth::guard('web')->user();
 
-        // Jika punya kolom role di tabel users
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
 
-        // Jika ternyata user biasa tapi bukan admin
         return redirect('/');
     }
 
     // -----------------------
-    // 2️⃣ Coba login sebagai pengajar (guard: pengajars)
+    // 2️⃣ Coba login sebagai pengajar
     // -----------------------
+    config(['session.cookie' => env('SESSION_COOKIE_PENGAJAR', Str::slug(env('APP_NAME', 'laravel')).'_pengajar_session')]);
+
     if (Auth::guard('pengajars')->attempt($credentials)) {
         $request->session()->regenerate();
         return redirect()->route('pengajar.dashboard');
@@ -74,11 +72,11 @@ Route::post('/login', function (Request $request) {
     ])->onlyInput('email');
 });
 
+
 // =======================
 // ✅ LOGOUT UNTUK DUA GUARD
 // =======================
 Route::post('/logout', function (Request $request) {
-    // Logout dari dua guard sekaligus
     Auth::guard('web')->logout();
     Auth::guard('pengajars')->logout();
 
