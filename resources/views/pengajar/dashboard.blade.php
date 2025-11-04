@@ -36,19 +36,6 @@
             </a>
         </div>
 
-        <!-- Card 2: Materi -->
-        <div class="col-12 col-md-4">
-            <a href="{{ route('pengajar.materi') }}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm hover-card rounded-3 overflow-hidden">
-                    <div class="card-body p-4 text-center">
-                        <i class="fas fa-book fs-1 text-success mb-3"></i>
-                        <h5 class="card-title mb-2">Materi Pelajaran</h5>
-                        <p class="card-text text-muted mb-0">Unggah, edit, dan bagikan materi pembelajaran untuk siswa Anda.</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-
         <!-- Card 3: Scan QR -->
         <div class="col-12 col-md-4">
             <a href="{{ route('pengajar.scan-qr-form') }}" class="text-decoration-none">

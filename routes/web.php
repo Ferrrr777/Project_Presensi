@@ -151,8 +151,6 @@ Route::prefix('pengajar')->middleware('auth:pengajars')->name('pengajar.')->grou
     Route::get('presensi', [PresensiController::class, 'index'])->name('presensi.index');
     Route::post('presensi/store', [PresensiController::class, 'store'])->name('presensi.store');
 
-   
-     
     Route::get('laporan', function(){ return view('pengajar.laporan'); })->name('laporan');
     
   Route::get('laporan/pdf', [PengajarController::class, 'laporanPdf'])->name('laporan.pdf');
