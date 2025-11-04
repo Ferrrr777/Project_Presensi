@@ -467,9 +467,6 @@
       <a href="{{ route('pengajar.dashboard') }}">
         <i class="fas fa-tachometer-alt"></i><span> Dashboard</span>
     </a>
-    <a href="{{ route('pengajar.materi') }}">
-        <i class="fas fa-book"></i><span> Materi</span>
-    </a>
     <a href="{{ route('pengajar.scan-qr-form') }}">
         <i class="fas fa-qrcode"></i><span> Scan QR</span>
     </a>
@@ -558,7 +555,6 @@
   }
 });
 
-    
 
     // Toggle Sidebar (Desktop)
     if (desktopSidebarToggle) {
